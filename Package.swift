@@ -9,6 +9,10 @@ let package = Package(
         // Dependencies declare other packages that this package depends on.
         // .package(url: /* package url */, from: "1.0.0"),
         .package(url: "https://github.com/apple/swift-crypto.git", "1.0.0" ..< "3.0.0"),
+
+        .package(name: "secp256k1",
+                url: "https://github.com/GigaBitcoin/secp256k1.swift.git",
+                from: "0.3.0")
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -16,7 +20,8 @@ let package = Package(
         .executableTarget(
             name: "podle",
             dependencies: [
-                .product(name: "Crypto", package: "swift-crypto")
+                .product(name: "Crypto", package: "swift-crypto"),
+                "secp256k1"
             ]),
         .testTarget(
             name: "podleTests",
