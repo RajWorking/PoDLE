@@ -96,8 +96,8 @@ class secp256k1 {
         return R
     }
 
-    func publicKey(priv: Int) -> Point
+    func publicKey(priv: Int) -> Int // compressed 0x02 ...
     {
-        return secp256k1.multiply(P: self.basePoint, s: priv)
+        return secp256k1.multiply(P: self.basePoint, s: priv).x
     }
 }

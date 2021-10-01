@@ -14,3 +14,5 @@ Reference implementation in Python --
 Swift Crypto Library for SHA256 --
 `https://github.com/apple/swift-crypto`
 
+Square root extraction modulo a prime --  
+`https://en.wikipedia.org/wiki/Quadratic_residue#Prime_or_prime_power_modulus`
