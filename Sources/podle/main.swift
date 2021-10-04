@@ -1,6 +1,6 @@
 import Foundation
 import BigInt
-// import Crypto
+import Crypto
 
 class PoDLE {
 
@@ -26,24 +26,29 @@ class PoDLE {
         let P2 = altGen.publicKey(priv: priv)
 
         //// H(P2) is commitment
-        // let commit = SHA256()
+        var d1 = Data.init(count: 33)
+        d1.replaceSubrange((33 - P2.serialize().count)...32, with: P2.serialize())
+        let commit = SHA256.hash(data: d1)
 
         // Schnorr 
         // e = H(kG + kJ + P + P2)
         // s = k + x*e
+        var d2 = Data.init(count: 132)
+        d2.replaceSubrange((132 - P2.serialize().count)...131, with: P2.serialize())
+        d2.replaceSubrange((99 - P.serialize().count)...98, with: P.serialize())
+        d2.replaceSubrange((66 - kJ.serialize().count)...65, with: kJ.serialize())
+        d2.replaceSubrange((33 - kG.serialize().count)...32, with: kG.serialize())
+        let e = SHA256.hash(data: d2)
+        let e_value = BigInt.init(e.map{String(format:"%02x",$0)}.joined(), radix: 16)!
 
-        /*
-            e is hash of 1024 bit integer
-        */
-
-        // let s = (k + (priv * e)%secp256k1.N)%secp256k1.N
+        let s = (k + (priv * e_value)%secp256k1.N)%secp256k1.N
 
         return ["utxo": u,
                 "P": String(P), 
                 "P2": String(P2), 
-                "commit": "commit", 
-                "sig": "s", 
-                "e": "e"]
+                "commit": commit.map{String(format:"%02x",$0)}.joined(), 
+                "sig": String(s), 
+                "e": e.map{String(format:"%02x",$0)}.joined()]
     }
 
     func getNUMS(index: Int) -> [String: BigInt] {
@@ -311,21 +316,12 @@ class PoDLE {
     }
     
     func test() -> String {
-
-        let key: BigInt = BigInt(BigUInt.randomInteger(withExactWidth: 256))
+        var key: BigInt = BigInt(BigUInt.randomInteger(withExactWidth: 256))
+        print("Private key: \(key)")
         return generate_podle(priv: key, u: "This is fun", index: 3).description
     }
-
-    func exec() -> String {
-
-        let key = "sha256"
-
-        return "\(key)"
-    }
-
     
 }
 
 let p = PoDLE()
-
 print(p.test())
