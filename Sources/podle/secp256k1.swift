@@ -14,14 +14,13 @@ struct Point {
 class secp256k1 {
     // y**2 = x**3 + 7
 
-    static let p: BigInt = BigInt.init("115792089237316195423570985008687907853269984665640564039457584007908834671663") // prime
-    static let N: BigInt = BigInt.init("115792089237316195423570985008687907852837564279074904382605163141518161494337")
-    // BigInt.init("")
+    static let p: BigInt = BigInt.init(stringLiteral: "115792089237316195423570985008687907853269984665640564039457584007908834671663") // prime
+    static let N: BigInt = BigInt.init(stringLiteral: "115792089237316195423570985008687907852837564279074904382605163141518161494337")
 
     static var G: Point = 
     Point(
-    BigInt.init("55066263022277343669578718895168534326250603453777594175500187360389116729240"), 
-    BigInt.init("32670510020758816978083085130507043184471273380659243275938904335757337482424")
+    BigInt.init(stringLiteral: "55066263022277343669578718895168534326250603453777594175500187360389116729240"), 
+    BigInt.init(stringLiteral: "32670510020758816978083085130507043184471273380659243275938904335757337482424")
     )
     
     let basePoint: Point
@@ -31,7 +30,11 @@ class secp256k1 {
 
     // P + Q
     static func add(P: Point, Q: Point) -> Point
-    {
+    {   
+        if P.x == Q.x && P.y == Q.y {
+            return double(P: P)
+        }
+
         let lamda: BigInt = ((Q.y - P.y)%p * ((Q.x - P.x)%p).inverse(p)!)%p
 
         var R = Point()
@@ -68,8 +71,7 @@ class secp256k1 {
         while m > 0
         {
             if m % 2 == 1 {
-                if Q.x == R.x {R = double(P: R)}
-                else {R = add(P: R, Q: Q)}
+                R = add(P: R, Q: Q)
             }
             Q = double(P: Q)
             m = m / 2
@@ -79,7 +81,10 @@ class secp256k1 {
 
     func publicKey(priv: BigInt) -> BigInt // compressed 0x02 ...
     {
-        return secp256k1.multiply(P: self.basePoint, s: priv).x
+        var pubkey: Point = secp256k1.multiply(P: self.basePoint, s: priv)
+        var lastbyte: BigInt = (pubkey.y % 2 == 0 ? 2 : 3) * BigInt(2).power(256)
+        var compressed: BigInt = pubkey.x + lastbyte
+        return compressed
     }
 }
 
