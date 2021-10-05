@@ -16,3 +16,10 @@ Swift Crypto Library for SHA256 --
 
 Square root extraction modulo a prime --  
 `https://en.wikipedia.org/wiki/Quadratic_residue#Prime_or_prime_power_modulus`
+
+Data types used --  
+`https://developer.apple.com/documentation/foundation/data`  
+`https://attaswift.github.io/BigInt/Structs/BigInt.html`
+
+Helpful Swift Guide --  
+`https://www.codecademy.com/learn/learn-swift/modules/learn-swift-conditionals/cheatsheet`
