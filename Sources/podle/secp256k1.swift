@@ -1,3 +1,9 @@
+// 
+// Secp256k1.swift
+// 
+// Created by Raj on 06/10/21.
+// Copyright © 2020 Fontaine. All rights reserved.
+// 
 import BigInt
 
 struct Point {
@@ -13,7 +19,6 @@ struct Point {
 
 class secp256k1 {
     // y**2 = x**3 + 7
-
     static let p: BigInt = BigInt.init(stringLiteral: "115792089237316195423570985008687907853269984665640564039457584007908834671663") // prime
     static let N: BigInt = BigInt.init(stringLiteral: "115792089237316195423570985008687907852837564279074904382605163141518161494337")
 
@@ -22,7 +27,7 @@ class secp256k1 {
     BigInt.init(stringLiteral: "55066263022277343669578718895168534326250603453777594175500187360389116729240"), 
     BigInt.init(stringLiteral: "32670510020758816978083085130507043184471273380659243275938904335757337482424")
     )
-    
+
     let basePoint: Point
     init(_ p: Point = G) {
         basePoint = p
@@ -79,30 +84,11 @@ class secp256k1 {
         return R
     }
 
-    func publicKey(priv: BigInt) -> BigInt // compressed 0x02 ...
+    func publicKey(priv: BigInt) -> BigInt // compressed
     {
-        var pubkey: Point = secp256k1.multiply(P: self.basePoint, s: priv)
-        var lastbyte: BigInt = (pubkey.y % 2 == 0 ? 2 : 3) * BigInt(2).power(256)
-        var compressed: BigInt = pubkey.x + lastbyte
+        let pubkey: Point = secp256k1.multiply(P: self.basePoint, s: priv)
+        let lastbyte: BigInt = (pubkey.y % 2 == 0 ? 2 : 3) * BigInt(2).power(256)
+        let compressed: BigInt = pubkey.x + lastbyte
         return compressed
     }
 }
-
-/*
-OLD CODE:
-static func modinv(_ num: Int) -> Int
-    {
-        var inv: Int = 1
-        var a = num
-        if a < 0 {a += p}
-
-        var w: Int = p - 2;
-    
-        while w > 0 {
-            if w % 2 == 1 {inv = (inv * a) % p}
-            a = (a * a) % p
-            w = w / 2;
-        }
-        return inv
-    }
-*/

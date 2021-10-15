@@ -4,15 +4,15 @@ import Crypto
 
 class PoDLE {
 
-    func generate_podle(priv: BigInt, u: String, index: Int = 0) -> [String: String] {
+    static func generatePodle(priv: BigInt, u: String, index: Int = 0) -> [String: String] {
 
         let baseGen = secp256k1()
         let k: BigInt = BigInt(BigUInt.randomInteger(withExactWidth: 256))
-    
+        print("K is \(k) \n")
+
         //// kG
         var kG = baseGen.publicKey(priv: k).serialize()
         kG = kG.dropFirst(max(0, kG.count - 33)) // to remove additional zeros from start
-
         //// P = xG
         var P = baseGen.publicKey(priv: priv).serialize()
         P = P.dropFirst(max(0, P.count - 33))
@@ -46,16 +46,18 @@ class PoDLE {
         let e_value = BigInt.init(e.map{String(format:"%02x",$0)}.joined(), radix: 16)!
 
         let s = (k + (priv * e_value)%secp256k1.N)%secp256k1.N
+        var sig = s.serialize()
+        sig = sig.dropFirst(max(0, sig.count - 32))
 
         return ["utxo": u,
                 "P": P.map{String(format:"%02x",$0)}.joined(), 
                 "P2": P2.map{String(format:"%02x",$0)}.joined(), 
                 "commit": commit.map{String(format:"%02x",$0)}.joined(), 
-                "sig": String(s), 
+                "sig": sig.map{String(format:"%02x",$0)}.joined(),
                 "e": e.map{String(format:"%02x",$0)}.joined()]
     }
 
-    func getNUMS(index: Int) -> [String: BigInt] {
+    static func getNUMS(index: Int) -> [String: BigInt] {
         assert(index >= 0 && index<256, "index is out of bounds")
 
         let precompNUMS: [[String: BigInt]] = 
@@ -318,13 +320,9 @@ class PoDLE {
 
     return precompNUMS[index]
     }
-    
-    func test() -> String {
-        var key: BigInt = BigInt(BigUInt.randomInteger(withExactWidth: 256))
-        print("Private key: \(key)")
-        return generate_podle(priv: key, u: "This is fun", index: 3).description
-    }
 }
 
-let p = PoDLE()
-print(p.test())
+let privkey = BigInt(BigUInt.randomInteger(withExactWidth: 256)).serialize()
+let privkeyValue = BigInt.init(privkey)
+print("private key is \(privkeyValue) \n")
+print(PoDLE.generatePodle(priv: privkeyValue, u: "abcd", index: 3))
