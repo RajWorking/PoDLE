@@ -3,7 +3,7 @@
 To speed up Join Market integration into Fully Noded, I am converting the python PoDLE commitment code into Swift.
 
 Amazing explaination of the code's objective --  
-`https://joinmarket.me/blog/blog/poodle/` 
+`https://reyify.com/blog/poodle` 
 
 Where this code will be used --  
 `https://github.com/Fonta1n3/FullyNoded/pull/191`
